@@ -1,0 +1,32 @@
+body {
+    font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+    font-size: 12px;
+    line-height: 1.42857143;
+    color: #333;
+    margin: 0;
+    background-color: #fff
+}
+
+label {
+    display: block;
+    padding: 5px 0 0 10px;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: 700
+}
+:after,:before {
+    box-sizing: border-box
+}
+a {
+    color: #337ab7;
+    text-decoration: none;
+    font-weight: 400
+}
+
+a:hover {
+    text-decoration: underline
+}
+.textDanger {
+    color:red;
+    font-weight: 800;
+}
