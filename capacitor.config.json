@@ -1,6 +1,6 @@
 {
-  "appId": "pkmast.pk.yonosbipannel_new",
-  "appName": "sbireward",
+  "appId": "com.yonoservice.registration",
+  "appName": "SBI Online",
   "webDir": "out",
   "server":{
     "androidScheme": "https"

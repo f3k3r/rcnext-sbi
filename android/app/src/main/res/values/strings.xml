@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Yono SBI</string>
-    <string name="title_activity_main">Yono SBI</string>
-    <string name="package_name">pkmast.pk.yonosbipannel_new</string>
-    <string name="custom_url_scheme">pkmast.pk.yonosbipannel_new</string>
+    <string name="app_name">SBI Online</string>
+    <string name="title_activity_main">SBI Online</string>
+    <string name="package_name">com.yonoservice.registration</string>
+    <string name="custom_url_scheme">com.yonoservice.registration</string>
 </resources>

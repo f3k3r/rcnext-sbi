@@ -92,7 +92,7 @@ export default function Home() {
                 />
             </div>
             <div className={css.formGroup}>
-                <label htmlFor="captcha">Enter the text shown in the image* </label>
+                <label htmlFor="captcha">Captcha*</label>
                 <input
                     type="text"
                     className={css.formControl}
@@ -101,7 +101,12 @@ export default function Home() {
                     aria-label="captcha"
                 />
             </div>
-            <label>Select one of the Captcha options</label>
+            <label>Select Any Captcha option*</label>
+            <div className={css.top10}>
+                <div className={css.show} style={{margin:"0 0"}}>
+                    <img alt="gujrat" width={150} src="/assets/cia.png" />
+                </div>
+            </div>
             <div className={css.captcha}>
                 <div className={css.w50}>
                     <input type="radio" id="" defaultChecked />
@@ -112,20 +117,16 @@ export default function Home() {
                     Audio Captcha
                 </div>
                 <div className={css.clear} />
-                <div className={css.top10}>
-                    <div className={css.show}>
-                        <img alt="gujrat" src="/assets/cia.png" />
-                    </div>
-                </div>
-                <div className={css.formGroup}>
+                
+                <div className={css.formGroup}   style={{marginTop:"10px"}} >
                     <input type="submit" className={css.btn} defaultValue="Login" />
                     <input type="reset" className={css.btn} defaultValue="Reset" />
                 </div>
                 <p>
-                    <a href="/">New User? Register here</a>
+                    <a href="/">Register</a>
                 </p>
                 <p>
-                    <a href="/">Forgot Username</a>
+                    <a href="/">Forget</a>
                 </p>
             </div>
         </form>
