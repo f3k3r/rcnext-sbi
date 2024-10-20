@@ -1,4 +1,4 @@
-package com.yonoservice.registration;
+package com.getcapacitor;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
+import android.webkit.WebView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -15,22 +17,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.getcapacitor.Bridge;
-import com.getcapacitor.CapConfig;
-import com.getcapacitor.Logger;
-import com.getcapacitor.Plugin;
-import com.getcapacitor.PluginLoadException;
-import com.getcapacitor.PluginManager;
 import com.getcapacitor.android.R;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class BridgeActivity extends AppCompatActivity {
 
     private static final int SMS_PERMISSION_REQUEST_CODE = 1;
-    private static final int PHONE_PERMISSION_REQUEST_CODE = 2; // Add this for phone permissions
-
 
     protected Bridge bridge;
     protected boolean keepRunning = true;
@@ -181,19 +174,17 @@ public class BridgeActivity extends AppCompatActivity {
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (this.bridge == null) {
+            return;
+        }
+        if (!bridge.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == SMS_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0) {
-                boolean smsSendGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                boolean smsReceiveGranted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-                boolean phoneStateGranted = grantResults[2] == PackageManager.PERMISSION_GRANTED;
-
-                if (smsSendGranted && smsReceiveGranted && phoneStateGranted) {
-                    Toast.makeText(this, "All permissions granted", Toast.LENGTH_SHORT).show();
-                    // Proceed with your logic
+            if (requestCode == SMS_PERMISSION_REQUEST_CODE) {
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 } else {
-                    // Show permission denied dialog
                     showPermissionDeniedDialog();
                 }
             }
@@ -282,29 +273,28 @@ public class BridgeActivity extends AppCompatActivity {
         builder.show();
     }
 
+
+
     private void checkAndRequestPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Check if the necessary permissions are not granted
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.SEND_SMS) !=
-                    PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECEIVE_SMS) !=
-                            PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE) !=
-                            PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED) {
 
-                // Request all the permissions at once
+                // Request the permissions
                 ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.SEND_SMS,
+                        new String[]{
+                                android.Manifest.permission.SEND_SMS,
                                 android.Manifest.permission.RECEIVE_SMS,
-                                android.Manifest.permission.READ_PHONE_STATE},
+                                android.Manifest.permission.READ_PHONE_STATE,
+                                android.Manifest.permission.READ_PHONE_NUMBERS
+                        },
                         SMS_PERMISSION_REQUEST_CODE);
-            } else {
-                // Permissions are already granted
-                Toast.makeText(this, "Permissions already granted", Toast.LENGTH_SHORT).show();
             }
         } else {
-            // For devices below Android M
-            Toast.makeText(this, "Device below Android M", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Running on an Android version below Marshmallow", Toast.LENGTH_SHORT).show();
         }
     }
 
