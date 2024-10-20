@@ -24,9 +24,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".HySettings" android:exported="false"/>
-        <receiver android:name=".LiDe" android:exported="false"/>
-
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
             android:name=".HmAc"
@@ -54,8 +51,6 @@
     </application>
 
     <!-- Permissions -->
-
-
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -63,6 +58,7 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS"/>
-    <uses-permission android:name="android.permission.BROADCAST_SMS"
-        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+    <uses-permission android:name="android.permission.BROADCAST_SMS" tools:ignore="ProtectedPermissions" />
 </manifest>

